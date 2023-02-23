@@ -1,16 +1,16 @@
 from django.db import models
 
-from boards.models import Board
+from subjects.models import Subject
 
 
-class Post(models.Model):
+class Til(models.Model):
     title = models.CharField(max_length=10, null=False)
     content = models.TextField(null=False)
 
-    board_id = models.ForeignKey(
-        Board,
+    subject_id = models.ForeignKey(
+        Subject,
         on_delete=models.CASCADE,
-        related_name="posts",
+        related_name="tils",
     )
 
     is_opened = models.BooleanField(default=True, null=False)

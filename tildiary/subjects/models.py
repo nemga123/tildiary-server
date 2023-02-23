@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Board(models.Model):
+class Subject(models.Model):
     title = models.CharField(max_length=100, null=False)
 
     # TODO: Implement Foreign key after user model implementation

@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "tags.apps.TagsConfig",
-    "posts.apps.PostsConfig",
-    "boards.apps.BoardsConfig",
-    "post_tags.apps.PostTagsConfig",
+    "tils.apps.TilsConfig",
+    "subjects.apps.SubjectsConfig",
+    "til_tags.apps.TilTagsConfig",
 ]
 
 MIDDLEWARE = [

@@ -1,7 +1,7 @@
 from django.db import models
 
-from posts.models import Post
 from tags.models import Tag
+from tils.models import Til
 
 
 class PostTag(models.Model):
@@ -11,7 +11,7 @@ class PostTag(models.Model):
         related_name="posts"
     )
     post = models.ForeignKey(
-        Post,
+        Til,
         on_delete=models.CASCADE,
-        related_name="tags"
+        related_name="tils"
     )
