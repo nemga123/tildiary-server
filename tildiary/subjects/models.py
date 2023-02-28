@@ -5,7 +5,7 @@ class Subject(models.Model):
     title = models.CharField(max_length=100, null=False)
 
     # TODO: Implement Foreign key after user model implementation
-    author_id = models.SmallIntegerField(null=False)
+    author = models.SmallIntegerField(null=False)
 
     is_opened = models.BooleanField(default=True)
 

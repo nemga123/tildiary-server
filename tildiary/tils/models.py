@@ -7,7 +7,10 @@ class Til(models.Model):
     title = models.CharField(max_length=10, null=False)
     content = models.TextField(null=False)
 
-    subject_id = models.ForeignKey(
+    # TODO: Implement Foreign key after user model implementation
+    author = models.SmallIntegerField(null=False)
+    
+    subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
         related_name="tils",

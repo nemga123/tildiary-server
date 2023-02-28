@@ -19,7 +19,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
 
     def list(self, request):
         user_id = request.GET.get("user", None)
-        subject_list = self.get_queryset().filter(author_id=user_id)
+        subject_list = self.get_queryset().filter(author=user_id)
         serializer: SubjectSerializer = self.get_serializer(
             instance=subject_list, many=True
         )

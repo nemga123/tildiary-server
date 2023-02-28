@@ -4,6 +4,6 @@ from tags.models import Tag
 from tils.models import Til
 
 
-class PostTag(models.Model):
-    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, related_name="posts")
-    post = models.ForeignKey(Til, on_delete=models.CASCADE, related_name="tils")
+class TilTag(models.Model):
+    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, related_name="tils")
+    til = models.ForeignKey(Til, on_delete=models.CASCADE, related_name="tags")
