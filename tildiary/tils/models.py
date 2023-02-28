@@ -9,7 +9,7 @@ class Til(models.Model):
 
     # TODO: Implement Foreign key after user model implementation
     author = models.SmallIntegerField(null=False)
-    
+
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,

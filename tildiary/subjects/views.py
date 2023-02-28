@@ -34,7 +34,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
         serializer: SubjectSerializer = self.get_serializer(
             instance=subject, data=request.data, partial=True
         )
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=200, safe=False)
 

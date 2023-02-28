@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from subjects.views import *
+from subjects.views import SubjectViewSet
 
 app_name = "subjects"
 

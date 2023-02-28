@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from tils.views import *
+from tils.views import TilViewSet
 
 app_name = "tils"
 
