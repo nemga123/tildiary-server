@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-ozg#=c7(7@!)3+ts)zcmw5foweso4qh=w)j&exb(b$+&cnr6b2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list[str] = []
 
 
 # Application definition
@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "tags.apps.TagsConfig",
     "tils.apps.TilsConfig",
     "subjects.apps.SubjectsConfig",
-    "til_tags.apps.TilTagsConfig",
 ]
 
 MIDDLEWARE = [

@@ -1,9 +1,13 @@
+from json import JSONDecodeError
+
+from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 
 from subjects.models import Subject
+from tags.models import Tag
 from tils.models import Til
 from tils.serializers import (DetailTilSerializer, ListTilSerializer,
                               PostTilSerializer)
@@ -24,10 +28,21 @@ class TilViewSet(viewsets.GenericViewSet):
         return super().get_serializer_class()
 
     # TODO: Authentication
+    @transaction.atomic
     def create(self, request):
-        serializer: PostTilSerializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        til: Til = serializer.save()
+
+        try:
+            tags: list = request.data['tags']
+        except (KeyError, JSONDecodeError):
+            tags = []
+
+        tag_objects = [Tag(tag=tag, til=til) for tag in tags]
+
+        Tag.objects.bulk_create(tag_objects)
+
         return JsonResponse(data=serializer.data, status=201)
 
     def retrieve(self, request, pk=None):
@@ -39,7 +54,7 @@ class TilViewSet(viewsets.GenericViewSet):
         if til.author != request.user.id and not til.is_opened:
             return HttpResponse("Not Found", status=404)
 
-        serializer: DetailTilSerializer = self.get_serializer(instance=til)
+        serializer = self.get_serializer(instance=til)
         return JsonResponse(serializer.data, status=200, safe=False)
 
     @action(
@@ -53,7 +68,7 @@ class TilViewSet(viewsets.GenericViewSet):
         if user_id != request.user.id:
             til_list.filter(is_opened=True)
 
-        serializer: ListTilSerializer = self.get_serializer(
+        serializer = self.get_serializer(
             instance=til_list, many=True
         )
         return JsonResponse(serializer.data, status=200, safe=False)
@@ -74,7 +89,7 @@ class TilViewSet(viewsets.GenericViewSet):
         if subject.author != request.user.id:
             til_list.filter(is_opened=True)
 
-        serializer: ListTilSerializer = self.get_serializer(
+        serializer = self.get_serializer(
             instance=til_list, many=True
         )
         return JsonResponse(serializer.data, status=200, safe=False)
@@ -85,7 +100,7 @@ class TilViewSet(viewsets.GenericViewSet):
             til = self.get_queryset().get(id=pk)
         except Subject.DoesNotExist:
             return HttpResponse("Not Found", status=404)
-        serializer: PostTilSerializer = self.get_serializer(
+        serializer = self.get_serializer(
             instance=til, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)

@@ -12,7 +12,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
 
     def create(self, request):
-        serializer: SubjectSerializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(data=serializer.data, status=201)
@@ -20,7 +20,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
     def list(self, request):
         user_id = request.GET.get("user", None)
         subject_list = self.get_queryset().filter(author=user_id)
-        serializer: SubjectSerializer = self.get_serializer(
+        serializer = self.get_serializer(
             instance=subject_list, many=True
         )
         return JsonResponse(serializer.data, status=200, safe=False)
@@ -31,7 +31,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
             subject = self.get_queryset().get(id=pk)
         except Subject.DoesNotExist:
             return HttpResponse("Not Found", status=404)
-        serializer: SubjectSerializer = self.get_serializer(
+        serializer = self.get_serializer(
             instance=subject, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)

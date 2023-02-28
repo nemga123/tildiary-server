@@ -27,11 +27,13 @@ class ListTilSerializer(serializers.ModelSerializer):
             "tags",
         )
 
-    def get_tags(self, obj):
-        return [til_tag.tag.tag for til_tag in obj.tags.all()]
+    def get_tags(self, obj) -> list:
+        return [tag.tag for tag in obj.tags.all()]
 
 
 class DetailTilSerializer(serializers.ModelSerializer):
+    tags = serializers.SerializerMethodField()
+
     class Meta:
         model = Til
         fields = (
@@ -43,5 +45,6 @@ class DetailTilSerializer(serializers.ModelSerializer):
             "tags",
         )
 
-    def get_tags(self, obj):
-        return [til_tag.tag.tag for til_tag in obj.tags.all()]
+    def get_tags(self, obj) -> list:
+        print(obj.tags.all())
+        return [tag.tag for tag in obj.tags.all()]
