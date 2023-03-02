@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "tags.apps.TagsConfig",
     "tils.apps.TilsConfig",
     "subjects.apps.SubjectsConfig",
+    "users.apps.UsersConfig",
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
