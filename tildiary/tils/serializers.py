@@ -2,16 +2,25 @@ from rest_framework import serializers
 
 from subjects.models import Subject
 from tils.models import Til
+from users.models import User
 
 
 class PostTilSerializer(serializers.ModelSerializer):
     subject = serializers.PrimaryKeyRelatedField(
         queryset=Subject.objects.all(), many=False
     )
+    author = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=False
+    )
 
     class Meta:
         model = Til
         fields = "__all__"
+
+    def validate_subject(self, subject):
+        if subject.author_id != self.context['user'].id:
+            raise serializers.ValidationError("Not your subject")
+        return subject
 
 
 class ListTilSerializer(serializers.ModelSerializer):

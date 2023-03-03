@@ -4,11 +4,11 @@ from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 
 from subjects.models import Subject
 from tags.models import Tag
 from tils.models import Til
+from tils.permissions import TilViewPermission
 from tils.serializers import (DetailTilSerializer, ListTilSerializer,
                               PostTilSerializer)
 
@@ -16,7 +16,7 @@ from tils.serializers import (DetailTilSerializer, ListTilSerializer,
 class TilViewSet(viewsets.GenericViewSet):
     queryset = Til.objects.prefetch_related("tags").all()
     serializer_class = PostTilSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (TilViewPermission,)
 
     def get_serializer_class(self):
         if self.action == "create" or self.action == "update":
@@ -27,10 +27,15 @@ class TilViewSet(viewsets.GenericViewSet):
             return DetailTilSerializer
         return super().get_serializer_class()
 
-    # TODO: Authentication
     @transaction.atomic
     def create(self, request):
-        serializer = self.get_serializer(data=request.data)
+        data = request.data.copy()
+        data['author'] = request.user.id
+
+        serializer = self.get_serializer(
+            data=data,
+            context={'user': request.user},
+        )
         serializer.is_valid(raise_exception=True)
         til: Til = serializer.save()
 
@@ -51,7 +56,7 @@ class TilViewSet(viewsets.GenericViewSet):
         except Til.DoesNotExist:
             return HttpResponse("Not Found", status=404)
 
-        if til.author != request.user.id and not til.is_opened:
+        if til.author.id != request.user.id and not til.is_opened:
             return HttpResponse("Not Found", status=404)
 
         serializer = self.get_serializer(instance=til)
@@ -63,10 +68,10 @@ class TilViewSet(viewsets.GenericViewSet):
         url_path=r"users/(?P<user_id>\d+)"
     )
     def list_by_user(self, request, user_id):
-        til_list = self.get_queryset().filter(author=user_id)
-
+        til_list = self.get_queryset().filter(author__id=user_id)
+        print(user_id, request.user.id)
         if user_id != request.user.id:
-            til_list.filter(is_opened=True)
+            til_list = til_list.filter(is_opened=True)
 
         serializer = self.get_serializer(
             instance=til_list, many=True
@@ -86,8 +91,8 @@ class TilViewSet(viewsets.GenericViewSet):
         except Subject.DoesNotExist:
             return HttpResponse("Not Found", status=404)
 
-        if subject.author != request.user.id:
-            til_list.filter(is_opened=True)
+        if subject.author.id != request.user.id:
+            til_list = til_list.filter(is_opened=True)
 
         serializer = self.get_serializer(
             instance=til_list, many=True
@@ -100,6 +105,10 @@ class TilViewSet(viewsets.GenericViewSet):
             til = self.get_queryset().get(id=pk)
         except Subject.DoesNotExist:
             return HttpResponse("Not Found", status=404)
+
+        if til.author.id != request.user.id:
+            return HttpResponse("Not owned til", status=401)
+
         serializer = self.get_serializer(
             instance=til, data=request.data, partial=True
         )
@@ -113,5 +122,9 @@ class TilViewSet(viewsets.GenericViewSet):
             til = self.get_queryset().get(id=pk)
         except Subject.DoesNotExist:
             return HttpResponse("Not Found", status=404)
+
+        if til.author.id != request.user.id:
+            return HttpResponse("Not owned til", status=401)
+
         til.delete()
         return HttpResponse(status=204)
