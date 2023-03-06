@@ -1,5 +1,6 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -11,7 +12,7 @@ from users.serializers import AuthSignUpSerializer
 class SignUpView(APIView):
     permission_classes = (AllowAny,)
 
-    def post(self, request):
+    def post(self, request: Request) -> HttpResponse:
         serializer = AuthSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -28,7 +29,7 @@ class SignUpView(APIView):
 class LogInView(APIView):
     permission_classes = (AllowAny,)
 
-    def post(self, request):
+    def post(self, request: Request) -> HttpResponse:
         serializer = TokenObtainPairSerializer(data=request.data)
 
         try:

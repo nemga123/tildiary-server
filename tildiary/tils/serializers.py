@@ -17,7 +17,7 @@ class PostTilSerializer(serializers.ModelSerializer):
         model = Til
         fields = "__all__"
 
-    def validate_subject(self, subject):
+    def validate_subject(self, subject: Subject) -> Subject:
         if subject.author_id != self.context['user'].id:
             raise serializers.ValidationError("Not your subject")
         return subject
@@ -36,7 +36,7 @@ class ListTilSerializer(serializers.ModelSerializer):
             "tags",
         )
 
-    def get_tags(self, obj) -> list:
+    def get_tags(self, obj: Til) -> list:
         return [tag.tag for tag in obj.tags.all()]
 
 
@@ -54,6 +54,6 @@ class DetailTilSerializer(serializers.ModelSerializer):
             "tags",
         )
 
-    def get_tags(self, obj) -> list:
+    def get_tags(self, obj: Til) -> list:
         print(obj.tags.all())
         return [tag.tag for tag in obj.tags.all()]

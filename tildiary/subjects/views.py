@@ -1,6 +1,9 @@
+from typing import Optional
+
 from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.request import Request
 
 from subjects.models import Subject
 from subjects.permissions import SubjectViewPermission
@@ -12,7 +15,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
     serializer_class = SubjectSerializer
     permission_classes = (SubjectViewPermission,)
 
-    def create(self, request):
+    def create(self, request: Request) -> HttpResponse:
         data = request.data.copy()
         data['author'] = request.user.id
         serializer = self.get_serializer(data=data)
@@ -25,7 +28,7 @@ class SubjectViewSet(viewsets.GenericViewSet):
         methods=["get"],
         url_path=r"users/(?P<user_id>\d+)"
     )
-    def list_by_user(self, request, user_id):
+    def list_by_user(self, request: Request, user_id: int) -> HttpResponse:
         subject_list = self.get_queryset().filter(author__id=user_id)
 
         if user_id != request.user.id:
@@ -36,7 +39,11 @@ class SubjectViewSet(viewsets.GenericViewSet):
         )
         return JsonResponse(serializer.data, status=200, safe=False)
 
-    def update(self, request, pk=None):
+    def update(
+        self,
+        request: Request,
+        pk: Optional[int] = None
+    ) -> HttpResponse:
         try:
             subject = self.get_queryset().get(id=pk)
         except Subject.DoesNotExist:
@@ -52,7 +59,11 @@ class SubjectViewSet(viewsets.GenericViewSet):
         serializer.save()
         return JsonResponse(serializer.data, status=200, safe=False)
 
-    def destroy(self, request, pk=None):
+    def destroy(
+        self,
+        request: Request,
+        pk: Optional[int] = None
+    ) -> HttpResponse:
         try:
             subject = self.get_queryset().get(id=pk)
         except Subject.DoesNotExist:

@@ -1,10 +1,17 @@
+from typing import Any, Optional
+
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
+    def create_user(
+        self,
+        email: str,
+        username: str,
+        password: Optional[str] = None
+    ) -> Any:
         if not email:
             raise ValueError('Email is required')
 
@@ -19,7 +26,12 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, password=None):
+    def create_superuser(
+        self,
+        email: str,
+        username: str,
+        password: Optional[str] = None
+    ) -> Any:
         user = self.create_user(email, username, password)
         user.is_admin = True
         user.save(using=self._db)
