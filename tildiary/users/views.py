@@ -37,5 +37,5 @@ class LogInView(APIView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
         data = serializer.validated_data
-        print(TokenObtainPairSerializer.token_class)
+
         return JsonResponse(data, status=200)
